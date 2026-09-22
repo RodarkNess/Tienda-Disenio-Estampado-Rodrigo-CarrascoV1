@@ -1,0 +1,65 @@
+{% extends 'ventas/base.html' %}
+{% block title %}Catálogo{% endblock %}
+{% block content %}
+<section aria-labelledby="titulo-productos">
+    <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
+        <div>
+            <p class="mb-2 text-sm font-semibold text-cyan-300">Catálogo</p>
+            <h1 id="titulo-productos" class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Productos</h1>
+        </div>
+        <a href="{% url 'producto_create' %}" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2.5 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-cyan-300 glow-cyan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-5" aria-hidden="true"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+            Añadir producto
+        </a>
+    </div>
+
+    {% if productos %}
+    <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Lista de productos">
+        {% for p in productos %}
+        <li class="group flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-cyan-400/40">
+            <!-- Espacio para la imagen del producto -->
+            <div class="flex h-40 items-center justify-center border-b border-slate-800 bg-slate-950/60">
+                {% if p.imagen %}
+                <img src="{{ p.imagen.url }}" alt="Foto de {{ p.nombre }}" class="h-full w-full object-cover">
+                {% else %}
+                <span class="flex flex-col items-center gap-1 text-slate-600">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-9"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M2.25 5.25h19.5v13.5H2.25v-13.5Z" /></svg>
+                    <span class="text-xs">Sin imagen</span>
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-1 flex-col p-5">
+                <div class="mb-3 flex items-start justify-between gap-3">
+                    <span class="inline-flex items-center rounded-lg bg-fuchsia-400/10 px-2.5 py-1 text-xs font-bold text-fuchsia-300 ring-1 ring-fuchsia-400/30">{{ p.codigo }}</span>
+                    <span class="text-lg font-bold tabular-nums text-cyan-300">${{ p.precio }}</span>
+                </div>
+                <h2 class="text-lg font-bold tracking-tight text-white">{{ p.nombre }}</h2>
+                <p class="mt-1 text-sm text-slate-400">
+                    {% if p.stock > 0 %}
+                    <span class="text-emerald-400">{{ p.stock }}</span> unidades en stock
+                    {% else %}
+                    <span class="font-semibold text-rose-400">Sin stock</span>
+                    {% endif %}
+                </p>
+
+                <div class="mt-auto flex items-center justify-end gap-1 pt-5">
+                    <a href="{% url 'producto_update' p.pk %}" class="inline-flex size-10 items-center justify-center rounded-xl text-slate-400 transition hover:bg-white/5 hover:text-cyan-300" aria-label="Editar {{ p.nombre }}" title="Editar / actualizar stock">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m16.86 3.49 3.65 3.65M4.5 19.5l3.99-.89L19.73 7.37a2.58 2.58 0 0 0-3.65-3.65L4.84 14.96 4.5 19.5Z" /></svg>
+                    </a>
+                    <a href="{% url 'producto_delete' p.pk %}" class="inline-flex size-10 items-center justify-center rounded-xl text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-400" aria-label="Eliminar {{ p.nombre }}" title="Eliminar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9 14.4 19.2m-4.8 0L9.26 9m9.15-3.21c.34.05.68.1 1.02.16m-1.02-.16-1.07 13.92a2.25 2.25 0 0 1-2.24 2.08H8.9a2.25 2.25 0 0 1-2.24-2.08L5.59 5.79m12.82 0a48.1 48.1 0 0 0-12.82 0m0 0L5.5 3.88m1.09 1.91L7.02 3.3A2.25 2.25 0 0 1 9.24 1.5h5.52a2.25 2.25 0 0 1 2.22 1.8l.43 2.49" /></svg>
+                    </a>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-16 text-center">
+        <h2 class="text-lg font-bold text-white">Aún no hay productos</h2>
+        <p class="mt-2 text-sm text-slate-400">Crea el primer producto para empezar a vender.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

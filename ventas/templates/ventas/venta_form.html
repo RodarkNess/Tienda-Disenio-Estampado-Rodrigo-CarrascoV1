@@ -1,0 +1,78 @@
+{% extends 'ventas/base.html' %}
+{% block title %}Registrar venta{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-xl">
+    <p class="mb-2 text-sm font-semibold text-cyan-300">Ventas</p>
+    <h1 class="mb-6 text-3xl font-bold tracking-tight text-white">Registrar venta</h1>
+
+    {% if form.non_field_errors %}
+    <div class="mb-5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+        {{ form.non_field_errors.0 }}
+    </div>
+    {% endif %}
+
+    <form method="post" class="space-y-5 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.35)]" novalidate>
+        {% csrf_token %}
+
+        <div>
+            <label for="{{ form.producto.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-200">Producto</label>
+            {{ form.producto }}
+            {% if form.producto.errors %}<p class="mt-1.5 text-sm font-medium text-rose-400">{{ form.producto.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+            <label for="{{ form.cantidad.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-200">Cantidad</label>
+            {{ form.cantidad }}
+            {% if form.cantidad.errors %}<p class="mt-1.5 text-sm font-medium text-rose-400">{{ form.cantidad.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+            <label for="{{ form.rut_cliente.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-200">RUT del cliente</label>
+            {{ form.rut_cliente }}
+            <p class="mt-1 text-xs text-slate-500">Siempre se pide, aunque no quiera ser cliente habitual (queda en la boleta).</p>
+            {% if form.rut_cliente.errors %}<p class="mt-1.5 text-sm font-medium text-rose-400">{{ form.rut_cliente.errors.0 }}</p>{% endif %}
+        </div>
+
+        <label class="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-800 bg-slate-950/40 px-4 py-3">
+            {{ form.es_habitual }}
+            <span class="text-sm font-semibold text-slate-200">{{ form.es_habitual.label }}</span>
+        </label>
+
+        <!-- Estos campos solo se muestran/exigen si la persona marca "cliente habitual" -->
+        <div id="datos-habitual" class="hidden space-y-5 rounded-xl border border-fuchsia-400/20 bg-fuchsia-400/5 p-4">
+            <div>
+                <label for="{{ form.nombre_cliente.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-200">{{ form.nombre_cliente.label }}</label>
+                {{ form.nombre_cliente }}
+                {% if form.nombre_cliente.errors %}<p class="mt-1.5 text-sm font-medium text-rose-400">{{ form.nombre_cliente.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+                <label for="{{ form.correo_cliente.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-200">{{ form.correo_cliente.label }}</label>
+                {{ form.correo_cliente }}
+                {% if form.correo_cliente.errors %}<p class="mt-1.5 text-sm font-medium text-rose-400">{{ form.correo_cliente.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+                <label for="{{ form.telefono_cliente.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-200">{{ form.telefono_cliente.label }}</label>
+                {{ form.telefono_cliente }}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+            <a href="{% url 'producto_list' %}" class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 hover:text-white">Cancelar</a>
+            <button type="submit" class="rounded-xl bg-cyan-400 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-cyan-300 glow-cyan">Registrar venta</button>
+        </div>
+    </form>
+</section>
+
+<script>
+    // Muestra/oculta los campos de cliente habitual según el checkbox.
+    const checkbox = document.getElementById('{{ form.es_habitual.id_for_label }}');
+    const bloqueHabitual = document.getElementById('datos-habitual');
+
+    function actualizarBloque() {
+        bloqueHabitual.classList.toggle('hidden', !checkbox.checked);
+    }
+
+    checkbox.addEventListener('change', actualizarBloque);
+    actualizarBloque(); // estado inicial (útil si el formulario vuelve con errores)
+</script>
+{% endblock %}

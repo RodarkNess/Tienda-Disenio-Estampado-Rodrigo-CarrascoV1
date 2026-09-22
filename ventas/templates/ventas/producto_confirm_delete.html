@@ -1,0 +1,16 @@
+{% extends 'ventas/base.html' %}
+{% block title %}Eliminar producto{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-md rounded-2xl border border-rose-500/30 bg-slate-900/60 p-6 text-center shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+    <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008ZM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+    </div>
+    <h1 class="text-xl font-bold text-white">¿Eliminar "{{ producto.nombre }}"?</h1>
+    <p class="mt-2 text-sm text-slate-400">Esta acción no se puede deshacer.</p>
+    <form method="post" class="mt-6 flex items-center justify-center gap-3">
+        {% csrf_token %}
+        <a href="{% url 'producto_list' %}" class="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-400 hover:text-white">Cancelar</a>
+        <button type="submit" class="rounded-xl bg-rose-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-rose-400">Eliminar</button>
+    </form>
+</section>
+{% endblock %}

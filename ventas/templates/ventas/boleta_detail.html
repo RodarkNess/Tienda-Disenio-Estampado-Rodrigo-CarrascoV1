@@ -1,0 +1,50 @@
+{% extends 'ventas/base.html' %}
+{% block title %}Boleta #{{ venta.pk }}{% endblock %}
+{% block content %}
+<section class="mx-auto max-w-md">
+    <div class="rounded-2xl border border-cyan-400/30 bg-slate-900/60 p-6 shadow-[0_0_40px_rgba(34,211,238,0.12)]">
+        <div class="mb-5 flex items-center justify-between border-b border-dashed border-slate-700 pb-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-cyan-300">Boleta</p>
+                <p class="text-lg font-bold text-white">N.º {{ venta.pk|stringformat:"05d" }}</p>
+            </div>
+            <span class="text-xs text-slate-400">{{ venta.fecha|date:"d-m-Y H:i" }}</span>
+        </div>
+
+        <dl class="space-y-3 text-sm">
+            <div class="flex justify-between">
+                <dt class="text-slate-400">Producto</dt>
+                <dd class="font-semibold text-white">{{ venta.producto.nombre }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-slate-400">Código</dt>
+                <dd class="text-slate-200">{{ venta.producto.codigo }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-slate-400">Cantidad</dt>
+                <dd class="text-slate-200">{{ venta.cantidad }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-slate-400">RUT cliente</dt>
+                <dd class="text-slate-200">{{ venta.rut_cliente }}</dd>
+            </div>
+            {% if venta.cliente %}
+            <div class="flex justify-between">
+                <dt class="text-slate-400">Cliente habitual</dt>
+                <dd class="text-fuchsia-300">{{ venta.cliente.nombre }}</dd>
+            </div>
+            {% endif %}
+        </dl>
+
+        <div class="mt-5 flex items-center justify-between border-t border-dashed border-slate-700 pt-4">
+            <span class="text-sm font-semibold text-slate-300">Total</span>
+            <span class="text-2xl font-bold text-glow text-cyan-300">${{ venta.total }}</span>
+        </div>
+    </div>
+
+    <div class="mt-6 flex justify-center gap-4">
+        <a href="{% url 'venta_create' %}" class="rounded-xl border border-slate-700 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:border-cyan-400/50 hover:text-cyan-300">Registrar otra venta</a>
+        <a href="{% url 'venta_list' %}" class="rounded-xl bg-cyan-400 px-4 py-2.5 text-sm font-bold text-slate-950 hover:bg-cyan-300">Ver historial</a>
+    </div>
+</section>
+{% endblock %}
