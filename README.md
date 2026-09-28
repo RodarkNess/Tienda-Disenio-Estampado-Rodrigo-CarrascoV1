@@ -10,7 +10,7 @@ Proyecto Django para TI3041 — Programación Backend (Evaluación Sumativa 1).
 
 ```bash
 where python
-python -m venv venv
+python -m venv .venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # Linux/Mac
 
@@ -20,11 +20,15 @@ pip install python-dotenv psycopg2
 En `.env` local puedes conservar estos nombres:
 
 ```env
-host=...
+host=aws-O-us-east-1.pooler.supabase.com
 port=6543
 database=postgres
 user=postgres.<project-ref>
-password=...
+password=
+
+Si no hay Superuser utilizar:
+python manage.py createsuperuser
+
 ```
 
 En Vercel configura las mismas credenciales usando `DB_HOST`, `DB_PORT`,
@@ -32,6 +36,8 @@ En Vercel configura las mismas credenciales usando `DB_HOST`, `DB_PORT`,
 Pooler** de Supabase (puerto `6543`) y la contraseña actual de la base de
 datos; no uses la contraseña del usuario de la cuenta de Supabase.
 
+Este código se utiliza para subir la colección de archivos multimedia
+python manage.py collectstatic
 
 python manage.py makemigrations
 python manage.py migrate
