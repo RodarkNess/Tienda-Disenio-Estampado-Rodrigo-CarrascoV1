@@ -19,7 +19,7 @@
             <p class="mt-1.5 text-sm font-medium text-rose-400">{{ field.errors.0 }}</p>
             {% endif %}
             {% if modo == 'editar' and field.name == 'imagen' and producto.imagen %}
-            <img src="{{ producto.imagen.url }}" alt="Imagen actual de {{ producto.nombre }}" class="mt-3 h-24 w-24 rounded-xl object-cover ring-1 ring-slate-700">
+            <img src="{{ producto.imagen_url }}" alt="Imagen actual de {{ producto.nombre }}" class="mt-3 h-24 w-24 rounded-xl object-cover ring-1 ring-slate-700">
             {% endif %}
         </div>
         {% endfor %}

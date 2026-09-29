@@ -1,5 +1,7 @@
 # Django modelo de datos para la app de ventas.
+from django.contrib.staticfiles import finders
 from django.db import models
+from django.templatetags.static import static
 
 # Modelo para representar un producto disponible para la venta en la tienda.
 class Producto(models.Model):
@@ -16,6 +18,16 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.codigo})"
+
+    @property
+    def imagen_url(self):
+        if not self.imagen:
+            return ""
+
+        if finders.find(self.imagen.name):
+            return static(self.imagen.name)
+
+        return self.imagen.url
 
 # Modelo para representar un cliente habitual de la tienda.
 # Solo se crea un registro aquí cuando la persona acepta ser cliente habitual al momento de comprar; si no, la venta solo guarda su RUT.

@@ -20,11 +20,6 @@ pip install python-dotenv psycopg2
 En `.env` local puedes conservar estos nombres:
 
 ```env
-host=aws-O-us-east-1.pooler.supabase.com
-port=6543
-database=postgres
-user=postgres.<project-ref>
-password=
 
 Si no hay Superuser utilizar:
 python manage.py createsuperuser
