@@ -17,9 +17,7 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 pip install python-dotenv psycopg2
 
-```env
-
-Si no hay Superuser utilizar:
+```Si no hay Superuser utilizar:
 python manage.py createsuperuser
 
 ```
