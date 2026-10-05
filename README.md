@@ -17,8 +17,6 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 pip install python-dotenv psycopg2
 
-En `.env` local puedes conservar estos nombres:
-
 ```env
 
 Si no hay Superuser utilizar:
