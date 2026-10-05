@@ -28,6 +28,19 @@ def env_value(name, legacy_name):
     return os.getenv(name) or local_env.get(legacy_name, "")
 
 
+def env_list(name):
+    return [
+        value.strip()
+        for value in os.getenv(name, "").split(",")
+        if value.strip()
+    ]
+
+
+vercel_hosts = env_list("VERCEL_URL")
+vercel_hosts.extend(env_list("VERCEL_BRANCH_URL"))
+vercel_hosts.extend(env_list("VERCEL_PROJECT_PRODUCTION_URL"))
+configured_hosts = env_list("ALLOWED_HOSTS")
+
 db_host = env_value("DB_HOST", "host")
 db_port = env_value("DB_PORT", "port")
 db_database = env_value("DB_NAME", "database")
@@ -40,15 +53,28 @@ db_sslmode = env_value("DB_SSLMODE", "sslmode") or "require"
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o$a80n3^o73nd)rm@=f50xnsll$!jlq)hcz%7gm-8m-*o!z$vj'
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-o$a80n3^o73nd)rm@=f50xnsll$!jlq)hcz%7gm-8m-*o!z$vj",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (
+    os.getenv("DJANGO_DEBUG", "true" if not os.getenv("VERCEL") else "false").lower()
+    == "true"
+)
 
 ALLOWED_HOSTS = [
-    'tienda-disenio-estampado-rodrigo-carrasco-v1-pzih8xrh2.vercel.app',
-    'localhost',
-    '127.0.0.1'
+    "localhost",
+    "127.0.0.1",
+    *configured_hosts,
+    *vercel_hosts,
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}"
+    for host in ALLOWED_HOSTS
+    if host not in {"localhost", "127.0.0.1"}
 ]
 
 # Application definition

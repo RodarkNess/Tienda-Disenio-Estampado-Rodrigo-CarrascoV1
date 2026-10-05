@@ -27,6 +27,12 @@ En Vercel configura las mismas credenciales usando `DB_HOST`, `DB_PORT`,
 Pooler** de Supabase (puerto `6543`) y la contraseña actual de la base de
 datos; no uses la contraseña del usuario de la cuenta de Supabase.
 
+Vercel define automáticamente `VERCEL_URL`, `VERCEL_BRANCH_URL` y
+`VERCEL_PROJECT_PRODUCTION_URL`. Django las utiliza para aceptar tanto la URL
+de producción como las URLs de preview, por lo que no es necesario copiar una
+URL concreta de Vercel en `ALLOWED_HOSTS`. Después de cambiar esta
+configuración hay que crear un nuevo deployment en Vercel.
+
 Este código se utiliza para subir la colección de archivos multimedia
 python manage.py collectstatic
 
