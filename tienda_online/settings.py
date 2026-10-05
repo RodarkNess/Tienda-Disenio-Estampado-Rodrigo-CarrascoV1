@@ -46,7 +46,7 @@ SECRET_KEY = 'django-insecure-o$a80n3^o73nd)rm@=f50xnsll$!jlq)hcz%7gm-8m-*o!z$vj
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'tienda-disenio-estampado-rodrigo-ca.vercel.app',
+    'tienda-disenio-estampado-rodrigo-carrasco-v1-pzih8xrh2.vercel.app',
     'localhost',
     '127.0.0.1'
 ]
