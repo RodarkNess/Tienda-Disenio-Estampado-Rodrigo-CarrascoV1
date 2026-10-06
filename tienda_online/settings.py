@@ -25,7 +25,7 @@ local_env = dotenv_values(BASE_DIR / ".env")
 
 
 def env_value(name, legacy_name):
-    return os.getenv(name) or local_env.get(legacy_name, "")
+    return os.getenv(name) or local_env.get(legacy_name) or os.getenv(legacy_name, "")
 
 
 def env_list(name):
