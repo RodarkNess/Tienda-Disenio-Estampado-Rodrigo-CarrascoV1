@@ -65,7 +65,7 @@ DEBUG = (
 )
 
 ALLOWED_HOSTS = [
-    'tienda-disenio-estampado-rodrigo-carrasco-v1-9f27opc2c.vercel.app',
+    'tienda-disenio-estampado-rodrigo-carrasco-v1-3yyci32w2.vercel.app',
     "localhost",
     "127.0.0.1",
     *configured_hosts,
