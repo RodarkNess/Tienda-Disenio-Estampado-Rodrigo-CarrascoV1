@@ -68,8 +68,6 @@ ALLOWED_HOSTS = [
     'tienda-disenio-estampado-rodrigo-carrasco-v1-3yyci32w2.vercel.app',
     "localhost",
     "127.0.0.1",
-    *configured_hosts,
-    *vercel_hosts,
 ]
 
 CSRF_TRUSTED_ORIGINS = [
