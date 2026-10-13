@@ -2,7 +2,7 @@
 from django import forms
 # Se importan los modelos y la función de validación de RUT desde utils.py
 from .models import Cliente, Producto
-from .utils import validar_rut
+from .utils import formatear_rut, validar_rut
 
 # Clases Tailwind reutilizadas en todos los inputs para mantener
 # la misma apariencia (fondo oscuro + borde neon al enfocar).
@@ -81,7 +81,9 @@ class VentaForm(forms.Form):
         rut = self.cleaned_data["rut_cliente"]
         if not validar_rut(rut):
             raise forms.ValidationError("El RUT ingresado no es válido.")
-        return rut
+        # Todas las ventas y clientes habituales usan el mismo formato
+        # canónico para que el RUT sea consistente en Admin y en la boleta.
+        return formatear_rut(rut)
     # Validación de stock y de campos obligatorios para clientes habituales.
     def clean(self):
         datos = super().clean()
@@ -110,3 +112,9 @@ class ClienteForm(forms.ModelForm):
             "correo": forms.EmailInput(attrs={"class": INPUT_CLASSES}),
             "telefono": forms.TextInput(attrs={"class": INPUT_CLASSES}),
         }
+
+    def clean_rut(self):
+        rut = self.cleaned_data["rut"]
+        if not validar_rut(rut):
+            raise forms.ValidationError("El RUT ingresado no es válido.")
+        return formatear_rut(rut)

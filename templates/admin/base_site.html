@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'ventas/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name" class="brand-lockup">
+    <a href="{% url 'admin:index' %}" class="brand-link">
+        <img src="{% static 'ventas/logo-estampados.png' %}" alt="" class="brand-logo">
+        <span>
+            <strong>Estampados Excelsior</strong>
+            <small>Control de ventas</small>
+        </span>
+    </a>
+</div>
+{% endblock %}

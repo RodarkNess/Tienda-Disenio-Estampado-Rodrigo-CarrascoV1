@@ -57,7 +57,7 @@ Polera Estampada, Polera Manga Larga, Polerón Estampado y Tazón Estampado.
   guarda el RUT para la boleta.
 - **/ventas/** — Historial de ventas.
 - **/ventas/<id>/boleta/** — Boleta de una venta puntual.
-- **/reportes/ventas/** — Reporte administrativo por rango de fechas (requiere
+- **/admin/reportes/ventas/** — Reporte administrativo por rango de fechas (requiere
   usuario staff).
 
 ## Notas técnicas

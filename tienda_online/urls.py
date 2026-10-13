@@ -2,10 +2,12 @@
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path, include, path
+from django.urls import include, path
+from ventas import views
 
 # Configuración de URLs para la aplicación de la tienda online.
 urlpatterns = [
+    path("admin/reportes/ventas/", views.reporte_ventas, name="admin_reporte_ventas"),
     path("admin/", admin.site.urls),
     path("", include("ventas.urls")),
 ]
