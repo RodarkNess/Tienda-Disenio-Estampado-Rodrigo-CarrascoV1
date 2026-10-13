@@ -56,5 +56,12 @@
         <p class="mt-2 text-sm text-slate-400">Registra la primera venta para verla aquí.</p>
     </div>
     {% endif %}
+    {% if ventas.has_other_pages %}
+    <nav class="mt-7 flex items-center justify-center gap-2" aria-label="Paginación de ventas">
+        {% if ventas.has_previous %}<a href="?page={{ ventas.previous_page_number }}" class="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:border-cyan-400/50">Anterior</a>{% endif %}
+        <span class="rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-cyan-300">Página {{ ventas.number }} de {{ ventas.paginator.num_pages }}</span>
+        {% if ventas.has_next %}<a href="?page={{ ventas.next_page_number }}" class="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:border-cyan-400/50">Siguiente</a>{% endif %}
+    </nav>
+    {% endif %}
 </section>
 {% endblock %}

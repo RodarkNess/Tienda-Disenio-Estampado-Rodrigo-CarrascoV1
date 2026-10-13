@@ -62,3 +62,26 @@ class Venta(models.Model):
 
     def __str__(self):
         return f"Venta #{self.pk} - {self.producto.nombre} x{self.cantidad}"
+
+
+class DetalleVenta(models.Model):
+    """Detalle editable de una venta, administrable como inline."""
+    venta = models.ForeignKey(
+        Venta, on_delete=models.CASCADE, related_name="detalles"
+    )
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.PositiveIntegerField(
+        help_text="Precio congelado al momento de la venta (CLP)"
+    )
+
+    class Meta:
+        verbose_name = "detalle de venta"
+        verbose_name_plural = "detalles de venta"
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
+
+    def __str__(self):
+        return f"{self.producto.nombre} x{self.cantidad}"

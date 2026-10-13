@@ -57,6 +57,8 @@ Polera Estampada, Polera Manga Larga, Polerón Estampado y Tazón Estampado.
   guarda el RUT para la boleta.
 - **/ventas/** — Historial de ventas.
 - **/ventas/<id>/boleta/** — Boleta de una venta puntual.
+- **/reportes/ventas/** — Reporte administrativo por rango de fechas (requiere
+  usuario staff).
 
 ## Notas técnicas
 - El RUT se valida con el algoritmo del dígito verificador chileno
@@ -65,3 +67,16 @@ Polera Estampada, Polera Manga Larga, Polerón Estampado y Tazón Estampado.
   `media/productos/`; si un producto no tiene imagen se muestra un
   placeholder.
 - Interfaz hecha con Tailwind CSS (CDN), tema oscuro con acentos neon.
+- El catálogo incluye búsqueda por nombre/código, tarjetas visuales para
+  poleras y paginación.
+- Las operaciones que modifican productos o registran ventas requieren iniciar
+  sesión mediante `/admin/login/`. El panel Admin incluye búsquedas, filtros,
+  acción para marcar productos sin stock, detalle de venta como inline y
+  cálculo del total.
+- En local se usa SQLite si no existen `DB_HOST` y `DB_NAME`. En Supabase o
+  cualquier PostgreSQL administrado se activan automáticamente las variables
+  `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` y `DB_SSLMODE`.
+- Para producción, ejecuta `python manage.py collectstatic --noinput` y
+  configura `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=false`, `ALLOWED_HOSTS` y las
+  variables de base de datos en el proveedor. WhiteNoise sirve los estáticos
+  recolectados.

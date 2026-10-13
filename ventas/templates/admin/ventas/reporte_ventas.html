@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Reporte de ventas | {{ site_title }}{% endblock %}
+{% block content %}
+<h1>Reporte de ventas</h1>
+<form method="get" class="module aligned" style="padding: 1rem; margin-bottom: 1.5rem;">
+    <div class="form-row">
+        <label for="desde">Desde:</label>
+        <input type="date" id="desde" name="desde" value="{{ desde|date:'Y-m-d' }}">
+    </div>
+    <div class="form-row">
+        <label for="hasta">Hasta:</label>
+        <input type="date" id="hasta" name="hasta" value="{{ hasta|date:'Y-m-d' }}">
+    </div>
+    <button type="submit" class="button">Filtrar</button>
+    <a href="{% url 'reporte_ventas' %}" class="button">Limpiar</a>
+</form>
+
+<div class="module">
+    <h2>Resumen</h2>
+    <p><strong>Ventas encontradas:</strong> {{ cantidad_ventas }}</p>
+    <p><strong>Total vendido:</strong> ${{ total_ventas }}</p>
+</div>
+
+<table id="result_list">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Cliente</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for venta in ventas %}
+        <tr>
+            <td>{{ venta.fecha|date:"d-m-Y H:i" }}</td>
+            <td>{{ venta.producto.nombre }}</td>
+            <td>{{ venta.rut_cliente }}</td>
+            <td>{{ venta.cantidad }}</td>
+            <td>${{ venta.total }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay ventas para el rango seleccionado.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

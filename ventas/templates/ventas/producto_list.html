@@ -5,22 +5,31 @@
     <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
         <div>
             <p class="mb-2 text-sm font-semibold text-cyan-300">Catálogo</p>
-            <h1 id="titulo-productos" class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Productos</h1>
+            <h1 id="titulo-productos" class="text-3xl font-bold tracking-tight text-white sm:text-4xl">Poleras y estampados</h1>
         </div>
+        {% if user.is_authenticated %}
         <a href="{% url 'producto_create' %}" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2.5 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-cyan-300 glow-cyan">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-5" aria-hidden="true"><path stroke-linecap="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
             Añadir producto
         </a>
+        {% endif %}
     </div>
+
+    <form method="get" class="mb-6 flex flex-col gap-2 sm:flex-row" role="search">
+        <label for="buscar-productos" class="sr-only">Buscar productos</label>
+        <input id="buscar-productos" name="q" value="{{ consulta }}" type="search" placeholder="Buscar por nombre o código..." class="min-h-11 flex-1 rounded-xl border border-slate-700 bg-slate-900/80 px-4 text-sm text-slate-100 outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/20">
+        <button type="submit" class="min-h-11 rounded-xl border border-cyan-400/40 px-5 text-sm font-bold text-cyan-300 transition hover:bg-cyan-400/10">Buscar</button>
+        {% if consulta %}<a href="{% url 'producto_list' %}" class="inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold text-slate-400 hover:text-white">Limpiar</a>{% endif %}
+    </form>
 
     {% if productos %}
     <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Lista de productos">
         {% for p in productos %}
         <li class="group flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 shadow-[0_10px_30px_rgba(0,0,0,0.35)] backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-cyan-400/40">
             <!-- Espacio para la imagen del producto -->
-            <div class="flex h-40 items-center justify-center border-b border-slate-800 bg-slate-950/60">
+            <div class="relative flex h-64 items-center justify-center overflow-hidden border-b border-cyan-400/20 bg-[radial-gradient(circle_at_50%_20%,rgba(14,116,144,.8),rgba(15,23,42,.95)_70%)]">
                 {% if p.imagen %}
-                <img src="{{ p.imagen_url }}" alt="Foto de {{ p.nombre }}" class="h-full w-full object-cover">
+                <img src="{{ p.imagen_url }}" alt="Foto de {{ p.nombre }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
                 {% else %}
                 <span class="flex flex-col items-center gap-1 text-slate-600">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="size-9"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M2.25 5.25h19.5v13.5H2.25v-13.5Z" /></svg>
@@ -55,6 +64,13 @@
         </li>
         {% endfor %}
     </ul>
+    {% if productos.has_other_pages %}
+    <nav class="mt-7 flex items-center justify-center gap-2" aria-label="Paginación de productos">
+        {% if productos.has_previous %}<a href="?q={{ consulta|urlencode }}&page={{ productos.previous_page_number }}" class="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:border-cyan-400/50">Anterior</a>{% endif %}
+        <span class="rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-cyan-300">Página {{ productos.number }} de {{ productos.paginator.num_pages }}</span>
+        {% if productos.has_next %}<a href="?q={{ consulta|urlencode }}&page={{ productos.next_page_number }}" class="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:border-cyan-400/50">Siguiente</a>{% endif %}
+    </nav>
+    {% endif %}
     {% else %}
     <div class="rounded-2xl border border-dashed border-slate-700 bg-slate-900/40 px-6 py-16 text-center">
         <h2 class="text-lg font-bold text-white">Aún no hay productos</h2>
