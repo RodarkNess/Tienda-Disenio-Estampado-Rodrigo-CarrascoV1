@@ -3,3 +3,6 @@ Pillow>=11.0
 psycopg2-binary
 python-dotenv
 whitenoise
+djangorestframework
+markdown
+django-filter

@@ -10,6 +10,7 @@ urlpatterns = [
     path("admin/reportes/ventas/", views.reporte_ventas, name="admin_reporte_ventas"),
     path("admin/", admin.site.urls),
     path("", include("ventas.urls")),
+    path("api-auth/", include("rest_framework.urls"))
 ]
 
 # Se agrega la configuración para servir archivos de medios (imágenes) durante el desarrollo.
