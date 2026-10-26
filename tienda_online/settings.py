@@ -99,7 +99,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ventas',
     "rest_framework",
-    "django_filters"
+    #"django_filters",
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -112,6 +113,22 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+ 'DEFAULT_AUTHENTICATION_CLASSES': (
+ 'rest_framework_simplejwt.authentication.JWTAuthentication',
+ ),
+
+ 'DEFAULT_PERMISSION_CLASSES': (
+     'rest_framework.permissions.IsAuthenticated',
+ )
+}
+
+#SIMPLE_JWT = {
+# 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+# 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+# 'AUTH_HEADER_TYPES': ('Bearer',),
+#}
 
 ROOT_URLCONF = 'tienda_online.urls'
 
