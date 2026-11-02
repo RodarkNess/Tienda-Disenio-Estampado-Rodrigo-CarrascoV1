@@ -60,6 +60,65 @@ Polera Estampada, Polera Manga Larga, Polerón Estampado y Tazón Estampado.
 - **/admin/reportes/ventas/** — Reporte administrativo por rango de fechas (requiere
   usuario staff).
 
+## API para frontend externo
+
+El backend conserva la interfaz Django existente y además expone una API REST
+para que otro repositorio pueda construir el frontend público:
+
+- **GET `/api/catalogo/productos/`** — Catálogo público paginado. Solo entrega
+  productos marcados como publicados.
+- **GET `/api/catalogo/productos/<id>/`** — Detalle público de un producto.
+- **GET `/api/schema/`** — Esquema de la API.
+- **`/api/productos/`, `/api/clientes/`, `/api/ventas/` y `/api/vendedores/`** —
+  Operaciones administrativas protegidas con JWT.
+- **POST `/api/auth/registro/`** — Crear una cuenta de comprador.
+- **`/api/pedidos/`** — Crear y consultar pedidos del comprador autenticado.
+- **POST `/api/pedidos/<id>/cancelar/`** — Cancelar un pedido pendiente y
+  devolver sus unidades al stock.
+- **`/api/token/` y `/api/token/refresh/`** — Obtener y renovar tokens JWT.
+
+El catálogo acepta `search`, `categoria`, `vendedor`, `ordering` y `page`.
+Las respuestas son paginadas con 20 elementos por página e incluyen
+`imagen_url` absoluta cuando el producto tiene imagen.
+
+Para permitir que el frontend se conecte desde otro dominio, define
+`CORS_ALLOWED_ORIGINS` como una lista separada por comas, por ejemplo:
+
+```text
+CORS_ALLOWED_ORIGINS=https://mi-frontend.example.com,http://localhost:3000
+```
+
+Los campos `descripcion`, `categoria`, `publicado` y `vendedor` preparan el
+catálogo para incorporar múltiples vendedores sin afectar los productos
+existentes. Los productos antiguos quedan publicados y sin vendedor hasta que
+se asignen desde el panel administrativo.
+
+### Pedidos y stock
+
+Para crear un pedido, el frontend debe autenticarse con JWT y enviar:
+
+```json
+{
+  "nombre_destinatario": "Juan Pérez",
+  "direccion": "Av. Principal 123",
+  "comuna": "Santiago",
+  "telefono": "+56 9 1234 5678",
+  "items": [
+    {"producto_id": 1, "cantidad": 2}
+  ]
+}
+```
+
+El backend consulta nuevamente los precios, valida que los productos estén
+publicados, bloquea las filas de inventario dentro de una transacción,
+descuenta el stock y calcula el total. El precio y total enviados por el
+frontend no son aceptados como fuente de verdad.
+
+Los pedidos se crean inicialmente con estado `pendiente_pago`. La cancelación
+solo está permitida en ese estado y repone el stock. La integración con un
+proveedor de pagos debe confirmar el pago mediante un webhook/backend antes de
+cambiar el pedido a `pagado`; todavía no se simula una aprobación de pago.
+
 ## Notas técnicas
 - El RUT se valida con el algoritmo del dígito verificador chileno
   (`ventas/utils.py`).

@@ -6,5 +6,9 @@ whitenoise
 djangorestframework
 markdown
 django-filter
+django-cors-headers
+PyYAML
+inflection
+uritemplate
 
 djangorestframework-simplejwt

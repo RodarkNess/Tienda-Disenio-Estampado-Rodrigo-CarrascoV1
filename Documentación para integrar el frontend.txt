@@ -1,0 +1,398 @@
+DOCUMENTACION PARA INTEGRAR EL FRONTEND
+========================================
+
+Proyecto: Tienda Online / API de productos y pedidos
+Backend: Django + Django REST Framework
+
+
+1. URL BASE
+-----------
+
+En desarrollo:
+
+http://127.0.0.1:8000
+
+En produccion se debe reemplazar por el dominio publicado del backend:
+
+https://tu-backend.com
+
+El frontend debe guardar esta URL en una variable de entorno.
+
+Vite:
+
+VITE_API_URL=http://127.0.0.1:8000
+
+Next.js:
+
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+
+
+2. CATALOGO PUBLICO
+-------------------
+
+Listar productos:
+
+GET /api/catalogo/productos/
+
+No requiere autenticacion.
+
+Ejemplo:
+
+GET http://127.0.0.1:8000/api/catalogo/productos/
+
+Respuesta:
+
+{
+  "count": 4,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 1,
+      "codigo": "POL-001",
+      "nombre": "Polera Estampada",
+      "descripcion": "",
+      "categoria": "",
+      "precio": 15000,
+      "stock": 20,
+      "imagen": "http://127.0.0.1:8000/media/productos/pol-001.png",
+      "imagen_url": "http://127.0.0.1:8000/media/productos/pol-001.png",
+      "vendedor": null,
+      "publicado": true
+    }
+  ]
+}
+
+Los productos estan dentro de la propiedad "results".
+
+Obtener un producto:
+
+GET /api/catalogo/productos/<id>/
+
+Ejemplo:
+
+GET /api/catalogo/productos/1/
+
+Busqueda y filtros:
+
+GET /api/catalogo/productos/?search=polera
+GET /api/catalogo/productos/?categoria=poleras
+GET /api/catalogo/productos/?vendedor=1
+GET /api/catalogo/productos/?ordering=precio
+GET /api/catalogo/productos/?ordering=-precio
+GET /api/catalogo/productos/?page=2
+
+Ejemplo combinado:
+
+GET /api/catalogo/productos/?search=polera&ordering=-precio&page=1
+
+Reglas del catalogo:
+
+- Solo aparecen productos con "publicado": true.
+- "stock" representa la disponibilidad actual.
+- "precio" esta expresado en pesos chilenos.
+- Usar "imagen_url" para mostrar la imagen.
+- El precio definitivo siempre lo determina el backend.
+- El backend vuelve a validar el precio al crear el pedido.
+
+
+3. REGISTRO DE COMPRADORES
+--------------------------
+
+Crear usuario:
+
+POST /api/auth/registro/
+Content-Type: application/json
+
+Body:
+
+{
+  "username": "juanperez",
+  "email": "juan@example.com",
+  "password": "UnaClaveSegura123",
+  "first_name": "Juan",
+  "last_name": "Perez"
+}
+
+La contrasena nunca se devuelve en la respuesta.
+
+
+4. AUTENTICACION JWT
+--------------------
+
+Obtener token:
+
+POST /api/token/
+Content-Type: application/json
+
+Body:
+
+{
+  "username": "juanperez",
+  "password": "UnaClaveSegura123"
+}
+
+Respuesta:
+
+{
+  "refresh": "token_de_refresh",
+  "access": "token_de_acceso"
+}
+
+Para operaciones protegidas:
+
+Authorization: Bearer token_de_acceso
+
+Renovar token:
+
+POST /api/token/refresh/
+Content-Type: application/json
+
+Body:
+
+{
+  "refresh": "token_de_refresh"
+}
+
+
+5. CREAR UN PEDIDO
+------------------
+
+El carrito puede mantenerse temporalmente en el frontend. Al confirmar la
+compra, el frontend debe enviar los productos al backend.
+
+POST /api/pedidos/
+Authorization: Bearer token_de_acceso
+Content-Type: application/json
+
+Body:
+
+{
+  "nombre_destinatario": "Juan Perez",
+  "direccion": "Avenida Principal 123",
+  "comuna": "Santiago",
+  "telefono": "+56 9 1234 5678",
+  "items": [
+    {
+      "producto_id": 1,
+      "cantidad": 2
+    },
+    {
+      "producto_id": 4,
+      "cantidad": 1
+    }
+  ]
+}
+
+El frontend NO debe enviar ni confiar en "precio", "subtotal" o "total".
+
+El backend:
+
+1. Verifica que el usuario este autenticado.
+2. Verifica que cada producto exista.
+3. Verifica que cada producto este publicado.
+4. Bloquea el inventario durante la operacion.
+5. Comprueba el stock real.
+6. Obtiene los precios actuales desde la base de datos.
+7. Calcula subtotales y total.
+8. Crea el pedido.
+9. Descuenta el stock dentro de una transaccion.
+10. Devuelve el pedido como "pendiente_pago".
+
+Respuesta de ejemplo:
+
+{
+  "id": 12,
+  "estado": "pendiente_pago",
+  "total": 35000,
+  "nombre_destinatario": "Juan Perez",
+  "direccion": "Avenida Principal 123",
+  "comuna": "Santiago",
+  "telefono": "+56 9 1234 5678",
+  "creado_en": "2026-11-02T13:30:00-03:00",
+  "actualizado_en": "2026-11-02T13:30:00-03:00",
+  "detalles": [
+    {
+      "id": 20,
+      "producto": {
+        "id": 1,
+        "codigo": "POL-001",
+        "nombre": "Polera Estampada",
+        "precio": 15000,
+        "stock": 18,
+        "imagen_url": "http://127.0.0.1:8000/media/productos/pol-001.png",
+        "publicado": true
+      },
+      "cantidad": 2,
+      "precio_unitario": 15000,
+      "subtotal": 30000
+    },
+    {
+      "id": 21,
+      "producto": {
+        "id": 4,
+        "codigo": "TAZ-001",
+        "nombre": "Tazon Estampado",
+        "precio": 5000,
+        "stock": 29,
+        "imagen_url": "http://127.0.0.1:8000/media/productos/taz-001.png",
+        "publicado": true
+      },
+      "cantidad": 1,
+      "precio_unitario": 5000,
+      "subtotal": 5000
+    }
+  ]
+}
+
+
+6. CONSULTAR PEDIDOS
+--------------------
+
+Listar pedidos del comprador autenticado:
+
+GET /api/pedidos/
+Authorization: Bearer token_de_acceso
+
+Obtener un pedido:
+
+GET /api/pedidos/<id>/
+Authorization: Bearer token_de_acceso
+
+El comprador solo puede consultar sus propios pedidos.
+
+
+7. CANCELAR UN PEDIDO
+---------------------
+
+POST /api/pedidos/<id>/cancelar/
+Authorization: Bearer token_de_acceso
+
+Solo se puede cancelar un pedido en estado:
+
+pendiente_pago
+
+Al cancelar:
+
+- El pedido cambia a "cancelado".
+- El stock vuelve a estar disponible.
+- No se puede cancelar un pedido pagado, enviado o entregado.
+
+
+8. ESTADOS DE PEDIDO
+--------------------
+
+Los estados disponibles son:
+
+pendiente_pago
+pagado
+preparando
+enviado
+entregado
+cancelado
+
+Los pedidos se crean inicialmente como "pendiente_pago".
+
+
+9. PAGOS ONLINE
+---------------
+
+La primera version sera de compra directa en la web. Aun falta integrar un
+proveedor de pagos especifico, por ejemplo Webpay, Mercado Pago o Stripe.
+
+El flujo esperado sera:
+
+1. El frontend crea el pedido.
+2. El backend crea una transaccion de pago.
+3. El frontend redirige al proveedor de pagos.
+4. El proveedor procesa el pago.
+5. El proveedor informa el resultado al backend.
+6. El backend valida la respuesta.
+7. El backend cambia el pedido a "pagado".
+8. El frontend muestra la confirmacion.
+
+Futuros endpoints probables:
+
+POST /api/pagos/iniciar/
+POST /api/pagos/confirmar/
+POST /api/webhooks/pagos/
+
+No se debe marcar un pedido como pagado desde el frontend.
+
+
+10. CORS
+--------
+
+Para desarrollo local, el backend debe permitir el origen del frontend.
+
+Ejemplo:
+
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+Si el frontend utiliza 127.0.0.1:
+
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173
+
+En produccion:
+
+CORS_ALLOWED_ORIGINS=https://mi-frontend.com
+
+El origen debe coincidir exactamente con el dominio y puerto utilizados por el
+frontend.
+
+
+11. ESQUEMA DE LA API
+---------------------
+
+El esquema OpenAPI esta disponible en:
+
+GET /api/schema/
+
+URL local:
+
+http://127.0.0.1:8000/api/schema/
+
+
+12. REGLAS IMPORTANTES PARA EL FRONTEND
+---------------------------------------
+
+- Usar el catalogo publico para mostrar productos.
+- Usar "results" para leer la lista paginada.
+- Usar "imagen_url" para las imagenes.
+- No confiar en precios calculados localmente.
+- No enviar totales como fuente de verdad.
+- No descontar stock como confirmacion de compra.
+- No marcar pedidos como pagados.
+- Enviar el token como "Authorization: Bearer <access_token>".
+- Manejar estados HTTP 401, 400, 404 y 409.
+- Mostrar nuevamente el stock devuelto por el backend despues de una compra.
+- El carrito puede vivir temporalmente en el frontend, pero el pedido definitivo
+  debe crearse en el backend.
+
+
+13. RESUMEN DE ENDPOINTS
+-----------------------
+
+Publicos:
+
+GET  /api/catalogo/productos/
+GET  /api/catalogo/productos/<id>/
+POST /api/auth/registro/
+GET  /api/schema/
+
+Autenticados:
+
+POST /api/token/
+POST /api/token/refresh/
+GET  /api/pedidos/
+POST /api/pedidos/
+GET  /api/pedidos/<id>/
+POST /api/pedidos/<id>/cancelar/
+
+Administrativos:
+
+/api/productos/
+/api/clientes/
+/api/ventas/
+/api/vendedores/
+

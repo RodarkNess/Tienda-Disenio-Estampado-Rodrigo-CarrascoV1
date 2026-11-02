@@ -2,7 +2,7 @@
 from django.contrib import admin
 # Se importan los modelos Cliente, Producto y Venta desde el archivo models.py de la aplicación "ventas"
 from django import forms
-from .models import Cliente, DetalleVenta, Producto, Venta
+from .models import Cliente, DetallePedido, DetalleVenta, Pedido, Producto, Venta, Vendedor
 from .utils import formatear_rut, validar_rut
 
 
@@ -13,14 +13,37 @@ def marcar_sin_stock(modeladmin, request, queryset):
 
 @admin.register(Producto) # Se registra el modelo Producto en el panel de administración de Django
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ("codigo", "nombre", "precio", "stock", "imagen")
+    list_display = ("codigo", "nombre", "vendedor", "precio", "stock", "publicado")
     list_display_links = ("codigo", "nombre")
-    search_fields = ("codigo", "nombre")
-    list_filter = ("stock",)
+    search_fields = ("codigo", "nombre", "categoria", "vendedor__nombre")
+    list_filter = ("stock", "publicado", "vendedor")
     list_editable = ("precio", "stock")
     list_per_page = 12
     empty_value_display = "—"
     actions = (marcar_sin_stock,)
+
+
+@admin.register(Vendedor)
+class VendedorAdmin(admin.ModelAdmin):
+    list_display = ("nombre", "slug", "correo", "activo", "creado_en")
+    search_fields = ("nombre", "slug", "correo")
+    list_filter = ("activo",)
+
+
+class DetallePedidoInline(admin.TabularInline):
+    model = DetallePedido
+    extra = 0
+    readonly_fields = ("producto", "vendedor", "cantidad", "precio_unitario", "subtotal")
+    fields = readonly_fields
+
+
+@admin.register(Pedido)
+class PedidoAdmin(admin.ModelAdmin):
+    list_display = ("id", "usuario", "estado", "total", "creado_en")
+    list_filter = ("estado", "creado_en")
+    search_fields = ("usuario__username", "nombre_destinatario", "comuna")
+    readonly_fields = ("usuario", "total", "creado_en", "actualizado_en")
+    inlines = (DetallePedidoInline,)
 
 
 @admin.register(Cliente) # Se registra el modelo Cliente en el panel de administración de Django

@@ -17,13 +17,23 @@ INPUT_CLASSES = (
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ["codigo", "nombre", "precio", "stock", "imagen"]
+        fields = [
+            "codigo", "nombre", "descripcion", "categoria", "precio", "stock",
+            "imagen", "vendedor", "publicado",
+        ]
         widgets = {
             "codigo": forms.TextInput(attrs={
                 "class": INPUT_CLASSES, "placeholder": "Ej. POL-001", "autocomplete": "off",
             }),
             "nombre": forms.TextInput(attrs={
                 "class": INPUT_CLASSES, "placeholder": "Ej. Polera Estampada",
+            }),
+            "descripcion": forms.Textarea(attrs={
+                "class": INPUT_CLASSES, "rows": 4,
+                "placeholder": "Descripción que verá el frontend externo",
+            }),
+            "categoria": forms.TextInput(attrs={
+                "class": INPUT_CLASSES, "placeholder": "Ej. Poleras",
             }),
             "precio": forms.NumberInput(attrs={
                 "class": INPUT_CLASSES, "placeholder": "0", "min": "0",
@@ -35,6 +45,10 @@ class ProductoForm(forms.ModelForm):
                 "class": "block w-full text-sm text-slate-300 file:mr-4 file:rounded-lg "
                          "file:border-0 file:bg-cyan-500/20 file:px-3 file:py-2 "
                          "file:text-cyan-300 file:font-semibold hover:file:bg-cyan-500/30",
+            }),
+            "vendedor": forms.Select(attrs={"class": INPUT_CLASSES}),
+            "publicado": forms.CheckboxInput(attrs={
+                "class": "size-5 rounded border-slate-600 bg-slate-900 text-cyan-400",
             }),
         }
     # Se normaliza el código para evitar duplicados por mayúsculas/espacios.

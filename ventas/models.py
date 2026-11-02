@@ -1,16 +1,50 @@
 # Django modelo de datos para la app de ventas.
 from django.contrib.staticfiles import finders
+from django.contrib.auth.models import User
 from django.db import models
 from django.templatetags.static import static
+
+
+class Vendedor(models.Model):
+    """Comerciante que publica productos en la plataforma."""
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="perfil_vendedor",
+        null=True,
+        blank=True,
+    )
+    nombre = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=140, unique=True)
+    correo = models.EmailField(blank=True)
+    activo = models.BooleanField(default=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["nombre"]
+
+    def __str__(self):
+        return self.nombre
+
 
 # Modelo para representar un producto disponible para la venta en la tienda.
 class Producto(models.Model):
     """Producto disponible para la venta en la tienda."""
     codigo = models.CharField(max_length=20, unique=True, verbose_name="Código")
     nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True)
+    categoria = models.CharField(max_length=80, blank=True)
     precio = models.PositiveIntegerField(help_text="Precio en pesos chilenos (CLP)")
     stock = models.PositiveIntegerField(default=0)
     imagen = models.ImageField(upload_to="productos/", blank=True, null=True)
+    vendedor = models.ForeignKey(
+        Vendedor,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="productos",
+    )
+    publicado = models.BooleanField(default=True)
 
     # La fecha de creación se guarda automáticamente al crear el registro.
     class Meta:
@@ -85,3 +119,47 @@ class DetalleVenta(models.Model):
 
     def __str__(self):
         return f"{self.producto.nombre} x{self.cantidad}"
+
+
+class Pedido(models.Model):
+    class Estado(models.TextChoices):
+        PENDIENTE_PAGO = "pendiente_pago", "Pendiente de pago"
+        PAGADO = "pagado", "Pagado"
+        PREPARANDO = "preparando", "Preparando"
+        ENVIADO = "enviado", "Enviado"
+        ENTREGADO = "entregado", "Entregado"
+        CANCELADO = "cancelado", "Cancelado"
+
+    usuario = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="pedidos"
+    )
+    estado = models.CharField(
+        max_length=20, choices=Estado.choices, default=Estado.PENDIENTE_PAGO
+    )
+    total = models.PositiveIntegerField(default=0)
+    nombre_destinatario = models.CharField(max_length=120)
+    direccion = models.CharField(max_length=255)
+    comuna = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20, blank=True)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-creado_en"]
+
+    def __str__(self):
+        return f"Pedido #{self.pk} - {self.usuario.username}"
+
+
+class DetallePedido(models.Model):
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name="detalles")
+    producto = models.ForeignKey(Producto, on_delete=models.PROTECT)
+    vendedor = models.ForeignKey(
+        Vendedor, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.PositiveIntegerField()
+
+    @property
+    def subtotal(self):
+        return self.cantidad * self.precio_unitario
