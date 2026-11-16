@@ -64,6 +64,28 @@ class CatalogoApiTests(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(User.objects.filter(username="comprador").exists())
 
+    def test_usuario_puede_obtener_y_refrescar_token_jwt(self):
+        User.objects.create_user(username="jwtbuyer", password="segura123")
+
+        login = self.client.post(
+            "/api/token/",
+            {"username": "jwtbuyer", "password": "segura123"},
+            format="json",
+        )
+
+        self.assertEqual(login.status_code, 200)
+        self.assertIn("access", login.data)
+        self.assertIn("refresh", login.data)
+
+        refresh = self.client.post(
+            "/api/token/refresh/",
+            {"refresh": login.data["refresh"]},
+            format="json",
+        )
+
+        self.assertEqual(refresh.status_code, 200)
+        self.assertIn("access", refresh.data)
+
     def test_pedido_calcula_total_y_descuenta_stock(self):
         usuario = User.objects.create_user(username="buyer", password="segura123")
         self.client.force_authenticate(usuario)

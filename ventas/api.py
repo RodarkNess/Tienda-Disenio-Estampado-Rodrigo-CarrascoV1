@@ -9,7 +9,7 @@ from rest_framework.schemas.openapi import AutoSchema
 from .models import Cliente, Pedido, Producto, Venta, Vendedor
 from .serializers import (
     ClienteSerializer, PedidoSerializer, ProductoSerializer,
-    RegistroUsuarioSerializer, VentaSerializer,
+    RegistroUsuarioSerializer, VentaSerializer, VendedorSerializer,
 )
 
 
@@ -42,13 +42,6 @@ class VentaViewSet(viewsets.ModelViewSet):
     serializer_class = VentaSerializer
     permission_classes = (IsAuthenticated,)
     filter_backends = (ApiFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-
-
-class VendedorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Vendedor
-        fields = ("id", "nombre", "slug", "correo", "activo", "creado_en")
-        read_only_fields = ("id", "creado_en")
 
 
 class VendedorViewSet(viewsets.ModelViewSet):

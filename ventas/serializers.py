@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db import transaction
 
-from .models import Cliente, DetallePedido, Pedido, Producto, Venta
+from .models import Cliente, DetallePedido, Pedido, Producto, Venta, Vendedor
 
 # Define serializers for the Producto, Cliente, and Venta models to convert model instances to JSON format and validate incoming data.
 class ProductoSerializer(serializers.ModelSerializer):
@@ -39,6 +39,13 @@ class VentaSerializer(serializers.ModelSerializer):
         fields = (
             "id", "producto", "cantidad", "rut_cliente", "cliente", "total", "fecha",
         )
+
+
+class VendedorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendedor
+        fields = ("id", "nombre", "slug", "correo", "activo", "creado_en")
+        read_only_fields = ("id", "creado_en")
 
 
 class RegistroUsuarioSerializer(serializers.ModelSerializer):

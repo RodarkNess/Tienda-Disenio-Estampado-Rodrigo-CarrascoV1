@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 import os
 from dotenv import dotenv_values
@@ -143,11 +144,11 @@ if DEBUG and not CORS_ALLOWED_ORIGINS:
     ]
 CORS_ALLOW_CREDENTIALS = False
 
-#SIMPLE_JWT = {
-# 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-# 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-# 'AUTH_HEADER_TYPES': ('Bearer',),
-#}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 
 ROOT_URLCONF = 'tienda_online.urls'
 

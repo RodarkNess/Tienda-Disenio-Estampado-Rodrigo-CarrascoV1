@@ -81,6 +81,14 @@ El catálogo acepta `search`, `categoria`, `vendedor`, `ordering` y `page`.
 Las respuestas son paginadas con 20 elementos por página e incluyen
 `imagen_url` absoluta cuando el producto tiene imagen.
 
+### Despliegue público
+
+- API REST: https://tienda-estampado-api-rodrigo-carras.vercel.app/
+- Frontend consumidor: https://multiversal-nerd.vercel.app/
+
+El frontend usa `POST /api/token/` para autenticarse y envía el token como
+`Authorization: Bearer <access_token>` en las operaciones protegidas.
+
 Para permitir que el frontend se conecte desde otro dominio, define
 `CORS_ALLOWED_ORIGINS` como una lista separada por comas, por ejemplo:
 
