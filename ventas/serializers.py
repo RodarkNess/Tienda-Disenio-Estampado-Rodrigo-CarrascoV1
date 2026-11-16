@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.db import transaction
+from rest_framework.validators import UniqueValidator
 
 from .models import Cliente, DetallePedido, Pedido, Producto, Venta, Vendedor
+from .utils import formatear_rut, validar_rut
 
 # Define serializers for the Producto, Cliente, and Venta models to convert model instances to JSON format and validate incoming data.
 class ProductoSerializer(serializers.ModelSerializer):
@@ -50,13 +52,40 @@ class VendedorSerializer(serializers.ModelSerializer):
 
 class RegistroUsuarioSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
+    rut = serializers.CharField(
+        write_only=True,
+        validators=[UniqueValidator(queryset=Cliente.objects.all())],
+    )
+    telefono = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ("username", "email", "password", "first_name", "last_name")
+        fields = (
+            "username", "email", "password", "first_name", "last_name",
+            "rut", "telefono",
+        )
+
+    def validate_rut(self, value):
+        if not validar_rut(value):
+            raise serializers.ValidationError("Ingresa un RUT chileno válido.")
+        return formatear_rut(value)
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        rut = validated_data.pop("rut")
+        telefono = validated_data.pop("telefono", "")
+        with transaction.atomic():
+            user = User.objects.create_user(**validated_data)
+            nombre = " ".join(
+                parte for parte in (user.first_name, user.last_name) if parte
+            ).strip() or user.username
+            Cliente.objects.create(
+                usuario=user,
+                rut=rut,
+                nombre=nombre,
+                correo=user.email,
+                telefono=telefono,
+            )
+        return user
 
 
 class DetallePedidoSerializer(serializers.ModelSerializer):

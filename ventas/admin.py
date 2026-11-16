@@ -1,9 +1,22 @@
 # Se importan las librerías necesarias para registrar los modelos en el panel de administración de Django
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 # Se importan los modelos Cliente, Producto y Venta desde el archivo models.py de la aplicación "ventas"
 from django import forms
 from .models import Cliente, DetallePedido, DetalleVenta, Pedido, Producto, Venta, Vendedor
 from .utils import formatear_rut, validar_rut
+
+
+class StaffUserAdmin(UserAdmin):
+    """Solo muestra cuentas autorizadas para administrar la plataforma."""
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(is_staff=True)
+
+
+admin.site.unregister(User)
+admin.site.register(User, StaffUserAdmin)
 
 
 @admin.action(description="Marcar productos seleccionados sin stock") # Se define una acción personalizada para marcar los productos seleccionados como sin stock
@@ -48,7 +61,7 @@ class PedidoAdmin(admin.ModelAdmin):
 
 @admin.register(Cliente) # Se registra el modelo Cliente en el panel de administración de Django
 class ClienteAdmin(admin.ModelAdmin):
-    list_display = ("rut", "nombre", "correo", "telefono")
+    list_display = ("rut", "nombre", "correo", "telefono", "usuario")
     # El prefijo "=" exige coincidencia exacta del RUT, incluidos puntos y guión.
     search_fields = ("=rut", "nombre", "correo", "telefono")
     ordering = ("nombre",)

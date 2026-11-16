@@ -71,7 +71,9 @@ para que otro repositorio pueda construir el frontend público:
 - **GET `/api/schema/`** — Esquema de la API.
 - **`/api/productos/`, `/api/clientes/`, `/api/ventas/` y `/api/vendedores/`** —
   Operaciones administrativas protegidas con JWT.
-- **POST `/api/auth/registro/`** — Crear una cuenta de comprador.
+- **POST `/api/auth/registro/`** — Crear una cuenta de comprador y su registro
+  en `Ventas > Clientes`. Recibe `username`, `email`, `password`, `first_name`,
+  `last_name`, `rut` y `telefono`.
 - **`/api/pedidos/`** — Crear y consultar pedidos del comprador autenticado.
 - **POST `/api/pedidos/<id>/cancelar/`** — Cancelar un pedido pendiente y
   devolver sus unidades al stock.
@@ -88,6 +90,9 @@ Las respuestas son paginadas con 20 elementos por página e incluyen
 
 El frontend usa `POST /api/token/` para autenticarse y envía el token como
 `Authorization: Bearer <access_token>` en las operaciones protegidas.
+Las cuentas técnicas necesarias para JWT no se muestran como clientes en el
+panel de usuarios: el registro visible del comprador queda en **Clientes**,
+mientras que el listado de **Usuarios** se reserva para cuentas staff.
 
 Para permitir que el frontend se conecte desde otro dominio, define
 `CORS_ALLOWED_ORIGINS` como una lista separada por comas, por ejemplo:

@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-from .models import Pedido, Producto
+from .models import Cliente, Pedido, Producto
 
 
 class CatalogoApiTests(TestCase):
@@ -57,12 +57,25 @@ class CatalogoApiTests(TestCase):
     def test_usuario_puede_registrarse(self):
         response = self.client.post(
             "/api/auth/registro/",
-            {"username": "comprador", "email": "buyer@example.com", "password": "segura123"},
+            {
+                "username": "comprador",
+                "email": "buyer@example.com",
+                "password": "segura123",
+                "first_name": "Comprador",
+                "last_name": "Prueba",
+                "rut": "12.345.678-5",
+                "telefono": "+56912345678",
+            },
             format="json",
         )
 
         self.assertEqual(response.status_code, 201)
         self.assertTrue(User.objects.filter(username="comprador").exists())
+        self.assertTrue(
+            Cliente.objects.filter(
+                rut="12.345.678-5", correo="buyer@example.com"
+            ).exists()
+        )
 
     def test_usuario_puede_obtener_y_refrescar_token_jwt(self):
         User.objects.create_user(username="jwtbuyer", password="segura123")

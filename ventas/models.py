@@ -66,6 +66,13 @@ class Producto(models.Model):
 # Modelo para representar un cliente habitual de la tienda.
 # Solo se crea un registro aquí cuando la persona acepta ser cliente habitual al momento de comprar; si no, la venta solo guarda su RUT.
 class Cliente(models.Model):
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="cliente",
+        null=True,
+        blank=True,
+    )
     rut = models.CharField(max_length=12, unique=True, verbose_name="RUT")
     nombre = models.CharField(max_length=100)
     correo = models.EmailField()
